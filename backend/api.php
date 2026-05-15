@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { exit; }
@@ -16,7 +16,8 @@ if (empty($authHeader) || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches))
 }
 $userToken = $matches[1]; 
 
-$firebaseURL = "https://student-454cb-default-rtdb.firebaseio.com/students.json";
+$baseURL = "";
+$firebaseURL = $baseURL . ".json";
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -43,7 +44,6 @@ if ($method === 'GET') {
     echo json_encode(array_reverse($students));
 }
 
-// 2. SAVE RECORD TO FIREBASE (POST)
 if ($method === 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
     
@@ -68,6 +68,54 @@ if ($method === 'POST') {
         curl_close($ch);
 
         echo json_encode(["status" => "success"]);
+    }
+}
+
+if ($method === 'PUT') {
+    $input = json_decode(file_get_contents("php://input"), true);
+    $id = $input['id']; 
+
+    if (!empty($id)) {
+        $updateURL = $baseURL . "/" . $id . ".json";
+        $payload = json_encode([
+            "name" => $input['name'],
+            "dob" => $input['dob'],
+            "gender" => $input['gender'],
+            "age" => (int)$input['age'],
+            "updated_at" => date('Y-m-d H:i:s')
+        ]);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $updateURL);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+        curl_exec($ch);
+        curl_close($ch);
+
+        echo json_encode(["status" => "updated"]);
+    }
+}
+
+if ($method === 'DELETE') {
+    $id = $_GET['id']; 
+
+    if (!empty($id)) {
+        $deleteURL = $baseURL . "/" . $id . ".json";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $deleteURL);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        curl_exec($ch);
+        curl_close($ch);
+
+        echo json_encode(["status" => "deleted"]);
     }
 }
 ?>
