@@ -3,7 +3,7 @@
 *Features of the Student Portal*
 
  Maintains a clean separation between the live student table and the registration input form.
- Uses a "Global School Portal" loading overlay to indicate when data is being fetched or saved.
+ loading overlay to indicate when data is being fetched or saved.
  Integrates Firebase Authentication to manage user sign-up and login securely via the cloud.
  Uses a direct PHP-to-Firebase connection for fast, real-time data synchronization.
  loading screen to handle transitions smoothly while data is being fetched or saved.
