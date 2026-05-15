@@ -1,14 +1,11 @@
 <?php
-// Professional Headers for React + PHP Communication
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// Handle preflight OPTIONS requests from React
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { exit; }
 
-// MIDDLEWARE SECURITY: intercept incoming JSON Web Token (JWT) signatures
 $headers = getallheaders();
 $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : '';
 
@@ -17,16 +14,12 @@ if (empty($authHeader) || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches))
     echo json_encode(["error" => "Access Blocked: Missing unique identification token."]);
     exit;
 }
-
-// Token extracted successfully
 $userToken = $matches[1]; 
 
-// Your exact Firebase Realtime Database cluster address
 $firebaseURL = "https://student-454cb-default-rtdb.firebaseio.com/students.json";
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// 1. FETCH RECORDS FROM FIREBASE (GET)
 if ($method === 'GET') {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $firebaseURL);
