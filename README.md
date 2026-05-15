@@ -11,10 +11,9 @@
 
 *Technology & Tools Stack*
 
-Frontend: React 
-Backend: PHP 
-Identity: Firebase 
-Storage: Firebase Realtime Database
+React 
+PHP 
+Firebase 
 
 
 *Step-by-Step:*
