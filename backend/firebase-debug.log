@@ -1,0 +1,19 @@
+[debug] [2026-05-14T14:31:24.443Z] ----------------------------------------------------------------------
+[debug] [2026-05-14T14:31:24.446Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ELCOT\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-05-14T14:31:24.447Z] CLI Version:   15.18.0
+[debug] [2026-05-14T14:31:24.447Z] Platform:      win32
+[debug] [2026-05-14T14:31:24.447Z] Node Version:  v24.13.0
+[debug] [2026-05-14T14:31:24.447Z] Time:          Thu May 14 2026 20:01:24 GMT+0530 (India Standard Time)
+[debug] [2026-05-14T14:31:24.448Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\ELCOT\Downloads\student-app\backend
+
