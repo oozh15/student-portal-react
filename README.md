@@ -1,28 +1,23 @@
-"Student Portal*
+*Student Portal*
 
-Features of the Student Portal
+*Features of the Student Portal*
 
-Privacy-First View: Automatically filters the student database so each staff member only sees records linked to their specific email account.
+ Maintains a clean separation between the live student table and the registration input form.
+ Uses a "Global School Portal" loading overlay to indicate when data is being fetched or saved.
+ Integrates Firebase Authentication to manage user sign-up and login securely via the cloud.
+ Uses a direct PHP-to-Firebase connection for fast, real-time data synchronization.
+ loading screen to handle transitions smoothly while data is being fetched or saved.
+ It automatically protects your website from SQL Injection attacks by separating the "query" from the "user data."
 
-Split-Screen Interface: Maintains a clean separation between the live student table and the registration input form.
+*Technology & Tools Stack*
 
-Visual Status Feedback: Uses a "Global School Portal" loading overlay to indicate when data is being fetched or saved.
-
-Cloud Security: Integrates Firebase Authentication to manage user sign-up and login securely via the cloud.
-
-Lightweight API Bridge: Uses a direct PHP-to-Firebase connection for fast, real-time data synchronization.
-
-Technology & Tools Stack
 Frontend: React 
-
 Backend: PHP 
-
 Identity: Firebase 
-
 Storage: Firebase Realtime Database
 
 
-Step-by-Step: 
+*Step-by-Step:*
 
 Setting up the PHP Server
 
