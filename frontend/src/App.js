@@ -30,6 +30,8 @@ function App() {
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [age, setAge] = useState('');
+  
+  const [editId, setEditId] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -55,6 +57,11 @@ function App() {
 
   const navigateTo = (tabIndex) => {
     setIsRefreshing(true);
+    // Clear form when navigating
+    if (tabIndex === 1) {
+        setEditId(null);
+        setName(''); setDob(''); setGender(''); setAge('');
+    }
     setTimeout(() => {
       setActiveTab(tabIndex);
       setIsRefreshing(false);
@@ -93,17 +100,45 @@ function App() {
     e.preventDefault();
     setIsRefreshing(true);
     const token = await user.getIdToken();
+    
+    const method = editId ? 'PUT' : 'POST';
+    const bodyData = editId ? { id: editId, name, dob, gender, age } : { name, dob, gender, age };
+
     await fetch(PHP_URL, {
-      method: 'POST',
+      method: method,
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ name, dob, gender, age })
+      body: JSON.stringify(bodyData)
     });
-    setName(''); setDob(''); setGender(''); setAge('');
+
+    setName(''); setDob(''); setGender(''); setAge(''); setEditId(null);
     await loadData(user);
     setTimeout(() => {
       setActiveTab(0); 
       setIsRefreshing(false);
     }, 800);
+  };
+
+  const deleteRecord = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this student?")) return;
+    setIsRefreshing(true);
+    const token = await user.getIdToken();
+    
+    await fetch(`${PHP_URL}?id=${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    await loadData(user);
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
+
+  const startEdit = (s) => {
+    setEditId(s.id);
+    setName(s.name);
+    setDob(s.dob);
+    setGender(s.gender);
+    setAge(s.age);
+    setActiveTab(1); 
   };
 
   if (authLoading || isRefreshing) {
@@ -149,7 +184,6 @@ function App() {
 
       <div className="dash-container">
         {activeTab === 0 ? (
-          /* PAGE 1: SEPARATE TABLE PAGE */
           <div className="glass-panel fade-in">
             <div className="panel-header">
               <h2>Student Database</h2>
@@ -158,7 +192,7 @@ function App() {
             <div className="table-wrapper">
                 <table className="student-table">
                     <thead>
-                        <tr><th>Name</th><th>DOB</th><th>Gender</th><th>Age</th></tr>
+                        <tr><th>Name</th><th>DOB</th><th>Gender</th><th>Age</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         {students.map((s, i) => (
@@ -167,6 +201,10 @@ function App() {
                                 <td>{s.dob}</td>
                                 <td>{s.gender}</td>
                                 <td><span className="age-tag">{s.age}</span></td>
+                                <td>
+                                    <button className="btn-edit" onClick={() => startEdit(s)}>Edit</button>
+                                    <button className="btn-delete" onClick={() => deleteRecord(s.id)}>Delete</button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -174,10 +212,9 @@ function App() {
             </div>
           </div>
         ) : (
-          /* PAGE 2: SEPARATE FORM PAGE */
           <div className="glass-panel fade-in">
             <div className="panel-header">
-              <h2>New Student Registration</h2>
+              <h2>{editId ? 'Update Student Details' : 'New Student Registration'}</h2>
               <button className="btn-back" onClick={() => navigateTo(0)}>Cancel</button>
             </div>
             <form onSubmit={addRecord} className="vertical-form">
@@ -197,7 +234,9 @@ function App() {
               <label>Age</label>
               <input type="number" value={age} onChange={e => setAge(e.target.value)} required />
               
-              <button type="submit" className="btn-save-large">SAVE STUDENT RECORD</button>
+              <button type="submit" className="btn-save-large">
+                  {editId ? 'UPDATE RECORD' : 'SAVE STUDENT RECORD'}
+              </button>
             </form>
           </div>
         )}
