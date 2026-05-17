@@ -57,7 +57,6 @@ function App() {
 
   const navigateTo = (tabIndex) => {
     setIsRefreshing(true);
-    // Clear form when navigating
     if (tabIndex === 1) {
         setEditId(null);
         setName(''); setDob(''); setGender(''); setAge('');
@@ -76,24 +75,58 @@ function App() {
 
   const handleAuth = async (e) => {
     e.preventDefault();
-    setIsRefreshing(true);
+    setIsRefreshing(true); 
+    setMsg({ type: '', text: '' });
+
     try {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
         await signOut(auth);
-        setIsSignUp(false);
-        setMsg({ type: 'success', text: 'Registration Complete!' });
+        setTimeout(() => {
+            setIsSignUp(false);
+            setEmail(''); 
+            setPassword('');
+            setMsg({ type: 'success', text: 'Account Created! Please Login.' });
+            setIsRefreshing(false);
+        }, 1000); 
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          setTimeout(() => {
+              setIsRefreshing(false);
+          }, 1000);
+        } catch (loginErr) {
+          
+          setTimeout(() => {
+            setEmail('');
+            setPassword('');
+            setMsg({ 
+                type: 'error', 
+                text: 'Login Failed: Please Create Account or Check values.' 
+            });
+            setIsRefreshing(false);
+          }, 1000);
+        }
       }
-    } catch (err) { setMsg({ type: 'error', text: 'Auth Failed' }); }
-    setIsRefreshing(false);
+    } catch (err) { 
+        setTimeout(() => {
+            setEmail('');
+            setPassword('');
+            setMsg({ type: 'error', text: 'Error: Please Create Account or Check values.' }); 
+            setIsRefreshing(false);
+        }, 1000);
+    }
   };
 
   const handleLogout = async () => {
-    setIsRefreshing(true);
+    setIsRefreshing(true); 
     await signOut(auth);
-    setTimeout(() => window.location.replace("/"), 800);
+    setEmail(''); 
+    setPassword('');
+    setMsg({ type: '', text: '' });
+    setTimeout(() => {
+        setIsRefreshing(false);
+    }, 1000); 
   };
 
   const addRecord = async (e) => {
@@ -158,12 +191,33 @@ function App() {
       <div className="full-bg center-all">
         <div className="auth-card">
           <h1>Global School</h1>
+          
+          {/* FAILED MESSAGE IN RED COLOR */}
+          {msg.text && (
+            <div style={{ 
+                color: msg.type === 'error' ? 'red' : 'green', 
+                backgroundColor: 'rgba(255,255,255,0.8)',
+                padding: '10px',
+                borderRadius: '5px',
+                marginBottom: '15px',
+                fontWeight: 'bold',
+                textAlign: 'center'
+            }}>
+              {msg.text}
+            </div>
+          )}
+
           <form onSubmit={handleAuth}>
             <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
             <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
             <button className="btn-blue">{isSignUp ? 'REGISTER' : 'LOGIN'}</button>
           </form>
-          <p className="link" onClick={() => setIsSignUp(!isSignUp)}>
+          <p className="link" onClick={() => {
+              setIsSignUp(!isSignUp);
+              setEmail(''); 
+              setPassword('');
+              setMsg({type: '', text: ''});
+          }}>
             {isSignUp ? 'Login' : 'Create Account'}
           </p>
         </div>
